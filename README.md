@@ -17,10 +17,12 @@ Node.js が入った Windows の PC で、このリポジトリを取ってき�
 
 ```
 npm install
-npm run register
+npm run try
 ```
 
-PowerPoint を開き直すと、「挿入」タブの「アドイン」（「個人用アドイン」）の「開発者向けアドイン」の欄に HTML Frame が出ます。ボタンの名前は Office の版で少し違います。
+`npm run try` はアドインを登録し、HTML Frame を置いたプレゼンテーションを PowerPoint で開きます。ほかのスライドやプレゼンテーションで使うときは、この枠をコピーして貼り付けます。貼り付けた枠は、それぞれ別の内容を持てます。
+
+登録だけするときは `npm run register` を使います。PowerPoint の「アプリ」画面（ストア）には HTML Frame は出ません。
 
 Node.js がない PC では、PowerShell で次を実行しても同じです（`<manifest.xml の場所>` は manifest.xml を保存したフルパス）。
 

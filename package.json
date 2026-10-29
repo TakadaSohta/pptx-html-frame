@@ -6,6 +6,7 @@
   "scripts": {
     "register": "office-addin-dev-settings register manifest.xml",
     "unregister": "office-addin-dev-settings unregister manifest.xml",
+    "try": "office-addin-dev-settings sideload manifest.xml desktop --app powerpoint",
     "dev-server": "node serve.js",
     "serve:http": "node serve.js --http",
     "certs": "office-addin-dev-certs install",
