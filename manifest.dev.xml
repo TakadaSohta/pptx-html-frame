@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- 開発用。手元のサーバー（https://localhost:3000）の docs/ を表示する -->
+<OfficeApp xmlns="http://schemas.microsoft.com/office/appforoffice/1.1"
+           xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+           xsi:type="ContentApp">
+  <Id>8c6b8332-a6d8-482f-8e05-0e3166838544</Id>
+  <Version>1.0.0.0</Version>
+  <ProviderName>HTML Frame</ProviderName>
+  <DefaultLocale>ja-JP</DefaultLocale>
+  <DisplayName DefaultValue="HTML Frame（開発版）" />
+  <Description DefaultValue="スライド上で HTML や Web ページを表示し、スライドショー中も操作できます。" />
+  <IconUrl DefaultValue="https://localhost:3000/assets/icon-32.png" />
+  <HighResolutionIconUrl DefaultValue="https://localhost:3000/assets/icon-64.png" />
+  <SupportUrl DefaultValue="https://localhost:3000/" />
+  <AppDomains>
+    <AppDomain>https://localhost:3000</AppDomain>
+  </AppDomains>
+  <Hosts>
+    <Host Name="Presentation" />
+  </Hosts>
+  <DefaultSettings>
+    <SourceLocation DefaultValue="https://localhost:3000/index.html" />
+    <RequestedWidth>640</RequestedWidth>
+    <RequestedHeight>360</RequestedHeight>
+  </DefaultSettings>
+  <Permissions>ReadWriteDocument</Permissions>
+  <AllowSnapshot>true</AllowSnapshot>
+</OfficeApp>

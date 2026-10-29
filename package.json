@@ -1,0 +1,25 @@
+{
+  "name": "pptx-html-frame",
+  "version": "1.0.0",
+  "description": "PowerPoint のスライド上で HTML を表示して操作できるコンテンツ アドイン",
+  "private": true,
+  "scripts": {
+    "register": "office-addin-dev-settings register manifest.xml",
+    "unregister": "office-addin-dev-settings unregister manifest.xml",
+    "dev-server": "node serve.js",
+    "serve:http": "node serve.js --http",
+    "certs": "office-addin-dev-certs install",
+    "start": "office-addin-debugging start manifest.dev.xml desktop --app powerpoint --no-debug",
+    "stop": "office-addin-debugging stop manifest.dev.xml desktop --app powerpoint",
+    "validate": "office-addin-manifest validate manifest.xml && office-addin-manifest validate manifest.dev.xml"
+  },
+  "config": {
+    "dev_server_port": 3000
+  },
+  "devDependencies": {
+    "office-addin-debugging": "^7.0.1",
+    "office-addin-dev-certs": "^3.0.1",
+    "office-addin-dev-settings": "^4.0.1",
+    "office-addin-manifest": "^3.0.1"
+  }
+}

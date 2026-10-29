@@ -1,0 +1,74 @@
+<!doctype html>
+<html lang="ja">
+<meta charset="utf-8">
+<style>
+  html, body { margin: 0; height: 100%; overflow: hidden; background: #0b1020; color: #e6e9f2; font: 16px system-ui, sans-serif; }
+  canvas { display: block; width: 100%; height: 100%; }
+  .panel { position: fixed; left: 16px; bottom: 16px; display: flex; gap: 12px; align-items: center;
+           padding: 8px 14px; border-radius: 10px; background: rgba(20, 28, 52, 0.85); }
+  button { font: inherit; padding: 4px 12px; border: 0; border-radius: 6px; background: #4f7cff; color: #fff; cursor: pointer; }
+</style>
+<canvas id="c"></canvas>
+<div class="panel">
+  <label>速さ <input id="speed" type="range" min="0" max="4" step="0.1" value="1"></label>
+  <button id="add">粒を増やす</button>
+  <span id="count"></span>
+</div>
+<script>
+  // マウスに寄ってくる粒。クリックで弾ける
+  const canvas = document.getElementById("c");
+  const g = canvas.getContext("2d");
+  const speed = document.getElementById("speed");
+  const count = document.getElementById("count");
+  const dots = [];
+  const mouse = { x: -1e9, y: -1e9 };
+
+  function resize() {
+    canvas.width = innerWidth * devicePixelRatio;
+    canvas.height = innerHeight * devicePixelRatio;
+    g.setTransform(devicePixelRatio, 0, 0, devicePixelRatio, 0, 0);
+  }
+
+  function add(n) {
+    for (let i = 0; i < n; i++) {
+      dots.push({ x: Math.random() * innerWidth, y: Math.random() * innerHeight,
+                  vx: Math.random() * 2 - 1, vy: Math.random() * 2 - 1, hue: 200 + Math.random() * 140 });
+    }
+    count.textContent = dots.length + " 個";
+  }
+
+  addEventListener("resize", resize);
+  addEventListener("pointermove", (e) => { mouse.x = e.clientX; mouse.y = e.clientY; });
+  document.addEventListener("pointerleave", () => { mouse.x = mouse.y = -1e9; });
+  document.getElementById("add").onclick = () => add(50);
+  canvas.addEventListener("pointerdown", (e) => {
+    for (const d of dots) {
+      const dx = d.x - e.clientX, dy = d.y - e.clientY, r = Math.hypot(dx, dy) || 1;
+      d.vx += dx / r * 6; d.vy += dy / r * 6;
+    }
+  });
+
+  function tick() {
+    const s = Number(speed.value);
+    g.fillStyle = "rgba(11, 16, 32, 0.25)";
+    g.fillRect(0, 0, innerWidth, innerHeight);
+    for (const d of dots) {
+      const dx = mouse.x - d.x, dy = mouse.y - d.y, r = Math.hypot(dx, dy);
+      if (r < 160 && r > 1) { d.vx += dx / r * 0.08; d.vy += dy / r * 0.08; }
+      if (Math.hypot(d.vx, d.vy) > 1) { d.vx *= 0.98; d.vy *= 0.98; }
+      d.x += d.vx * s; d.y += d.vy * s;
+      if (d.x < 0 || d.x > innerWidth) { d.vx *= -1; d.x = Math.min(Math.max(d.x, 0), innerWidth); }
+      if (d.y < 0 || d.y > innerHeight) { d.vy *= -1; d.y = Math.min(Math.max(d.y, 0), innerHeight); }
+      g.fillStyle = "hsl(" + d.hue + " 80% 65%)";
+      g.beginPath();
+      g.arc(d.x, d.y, 3, 0, Math.PI * 2);
+      g.fill();
+    }
+    requestAnimationFrame(tick);
+  }
+
+  resize();
+  add(150);
+  tick();
+</script>
+</html>

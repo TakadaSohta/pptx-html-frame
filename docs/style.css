@@ -1,0 +1,201 @@
+:root {
+  color-scheme: light dark;
+  --bg: #ffffff;
+  --fg: #1f1f1f;
+  --muted: #616161;
+  --line: #d1d1d1;
+  --field: #fafafa;
+  --accent: #c43e1c;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --bg: #1f1f1f;
+    --fg: #f0f0f0;
+    --muted: #adadad;
+    --line: #474747;
+    --field: #292929;
+    --accent: #e0643f;
+  }
+}
+
+[hidden] {
+  display: none !important;
+}
+
+html,
+body {
+  margin: 0;
+  height: 100%;
+  overflow: hidden;
+  background: var(--bg);
+  color: var(--fg);
+  font: 12px/1.5 "Segoe UI", "Yu Gothic UI", "Meiryo UI", system-ui, sans-serif;
+}
+
+/* 表示 */
+
+#viewer {
+  position: fixed;
+  inset: 0;
+  background: #ffffff;
+}
+
+#stage {
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+}
+
+#stage iframe {
+  position: absolute;
+  left: 0;
+  top: 0;
+  display: block;
+  border: 0;
+  transform-origin: 0 0;
+}
+
+#toolbar {
+  position: absolute;
+  top: 4px;
+  right: 4px;
+  display: flex;
+  gap: 4px;
+  opacity: 0.55;
+  transition: opacity 0.15s;
+}
+
+#toolbar:hover,
+#toolbar:focus-within {
+  opacity: 1;
+}
+
+#toolbar button {
+  padding: 1px 8px;
+  border: 1px solid rgba(0, 0, 0, 0.25);
+  background: rgba(255, 255, 255, 0.92);
+  color: #1f1f1f;
+}
+
+#empty {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 100%;
+  padding: 0 16px;
+  box-sizing: border-box;
+  color: var(--muted);
+  text-align: center;
+}
+
+/* 編集 */
+
+#editor {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  height: 100%;
+  padding: 8px;
+  box-sizing: border-box;
+  overflow: auto;
+}
+
+header,
+footer {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 6px 12px;
+}
+
+footer {
+  gap: 6px;
+}
+
+label {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.pane {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  gap: 6px;
+  min-height: 72px;
+}
+
+input[type="text"],
+input[type="number"],
+textarea {
+  box-sizing: border-box;
+  padding: 4px 6px;
+  border: 1px solid var(--line);
+  border-radius: 4px;
+  background: var(--field);
+  color: var(--fg);
+  font: inherit;
+}
+
+input[type="text"] {
+  width: 100%;
+}
+
+#design-width {
+  width: 80px;
+}
+
+textarea {
+  flex: 1;
+  min-height: 60px;
+  resize: none;
+  font: 12px/1.45 Consolas, "BIZ UDGothic", monospace;
+  tab-size: 2;
+  white-space: pre;
+}
+
+details[open] > summary {
+  margin-bottom: 4px;
+}
+
+summary {
+  cursor: pointer;
+  color: var(--muted);
+}
+
+.note {
+  margin: 0 0 6px;
+  color: var(--muted);
+  font-size: 11px;
+}
+
+#status {
+  flex: 1;
+  min-width: 8em;
+  color: var(--muted);
+}
+
+button {
+  padding: 3px 10px;
+  border: 1px solid var(--line);
+  border-radius: 4px;
+  background: var(--field);
+  color: var(--fg);
+  font: inherit;
+  cursor: pointer;
+}
+
+button.primary {
+  border-color: var(--accent);
+  background: var(--accent);
+  color: #ffffff;
+}
+
+button:focus-visible,
+input:focus-visible,
+textarea:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 1px;
+}
