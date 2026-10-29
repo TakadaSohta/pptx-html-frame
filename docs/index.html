@@ -40,6 +40,17 @@
       <summary>表示の設定</summary>
       <label>基準の幅 <input id="design-width" type="number" min="0" step="10"> px</label>
       <p class="note">0 なら枠の大きさのまま表示します。幅を入れると、その幅で描いた画面を枠に合わせて拡大縮小するので、編集画面とスライドショーで見た目がそろいます。</p>
+      <label>描画の解像度
+        <select id="pixel-ratio">
+          <option value="0">画面に合わせる</option>
+          <option value="1">1 倍</option>
+          <option value="0.75">0.75 倍</option>
+          <option value="0.5">0.5 倍</option>
+        </select>
+      </label>
+      <p class="note">スライドショーで動きが重いときに下げます。小さくするほど軽くなり、表示は粗くなります。キャンバスや WebGL の大きさを devicePixelRatio で決めている HTML に効きます。この画面の倍率は今 <span id="dpr-now"></span> 倍です。</p>
+      <label><input type="checkbox" id="show-fps"> FPS を表示する</label>
+      <p class="note">枠の左上に 1 秒あたりの描画回数を出します。解像度の設定の効き目を確かめるときに使います。描画の解像度と FPS の表示は「HTML を書く」のときだけ効きます。</p>
       <label><input type="checkbox" id="same-origin"> localStorage などを使えるようにする</label>
       <p class="note">「HTML を書く」のときだけ効きます。HTML の中のスクリプトがアドイン本体に触れられるようになるので、自分で書いたコードのときだけ有効にしてください。</p>
     </details>

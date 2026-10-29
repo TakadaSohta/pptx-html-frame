@@ -2,7 +2,35 @@
 "use strict";
 
 const KEY = "htmlFrame";
-const DEFAULTS = { mode: "html", html: "", url: "", designWidth: 0, sameOrigin: false };
+const DEFAULTS = {
+  mode: "html",
+  html: "",
+  url: "",
+  designWidth: 0,
+  pixelRatio: 0, // 0 なら画面の倍率のまま
+  showFps: false,
+  sameOrigin: false,
+};
+
+// 枠の左上に 1 秒あたりの描画回数を出す。0.5 秒ごとに数え直す
+const FPS_SCRIPT = `(function () {
+  var el, n = 0, t0 = performance.now();
+  function tick(t) {
+    n++;
+    if (t - t0 >= 500) {
+      if (!el && document.body) {
+        el = document.createElement("div");
+        el.style.cssText = "position:fixed;left:4px;top:4px;z-index:2147483647;padding:2px 6px;border-radius:4px;background:rgba(0,0,0,.6);color:#fff;font:12px/1.4 monospace;pointer-events:none";
+        document.body.appendChild(el);
+      }
+      if (el) el.textContent = Math.round((n * 1000) / (t - t0)) + " FPS";
+      n = 0;
+      t0 = t;
+    }
+    requestAnimationFrame(tick);
+  }
+  requestAnimationFrame(tick);
+})();`;
 
 const $ = (id) => document.getElementById(id);
 const form = $("editor");
@@ -94,7 +122,26 @@ async function render() {
   layout();
   await settle();
   if (cfg.mode === "url") frame.src = cfg.url;
-  else frame.srcdoc = cfg.html;
+  else frame.srcdoc = withPrelude(cfg.html, cfg);
+}
+
+// 「HTML を書く」の HTML の先頭に差し込み、利用者のスクリプトより先に動かすスクリプト
+function prelude(cfg) {
+  let js = "";
+  if (cfg.pixelRatio > 0) {
+    // キャンバスや WebGL の大きさを devicePixelRatio で決める HTML なら、描くピクセル数が減る
+    js += `try { Object.defineProperty(window, "devicePixelRatio", { get: function () { return ${cfg.pixelRatio}; }, configurable: true }); } catch (e) {}\n`;
+  }
+  if (cfg.showFps) js += FPS_SCRIPT;
+  return js ? `<script>\n${js}</script>` : "";
+}
+
+function withPrelude(html, cfg) {
+  const head = prelude(cfg);
+  if (!head) return html;
+  // <!doctype> より前に置くと互換モードになるので、doctype のすぐ後ろに入れる
+  const doctype = html.match(/^\s*<!doctype[^>]*>/i);
+  return doctype ? doctype[0] + head + html.slice(doctype[0].length) : head + html;
 }
 
 // 基準の幅があれば、その幅で描いた画面を枠の幅に合わせて拡大縮小する
@@ -135,7 +182,10 @@ async function openEditor() {
   $("html").value = c.html;
   $("url").value = c.url;
   $("design-width").value = c.designWidth;
+  $("pixel-ratio").value = String(c.pixelRatio);
+  $("show-fps").checked = c.showFps;
   $("same-origin").checked = c.sameOrigin;
+  $("dpr-now").textContent = String(Math.round(window.devicePixelRatio * 100) / 100);
   $("btn-cancel").hidden = !config;
   status("");
   syncPanes();
@@ -155,6 +205,8 @@ async function save(e) {
     html: $("html").value,
     url: $("url").value.trim(),
     designWidth: Math.max(0, Math.round(Number($("design-width").value) || 0)),
+    pixelRatio: Number($("pixel-ratio").value) || 0,
+    showFps: $("show-fps").checked,
     sameOrigin: $("same-origin").checked,
   };
   if (next.mode === "url" && !/^https?:\/\//i.test(next.url)) {

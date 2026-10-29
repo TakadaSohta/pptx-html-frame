@@ -129,6 +129,7 @@ label {
 
 input[type="text"],
 input[type="number"],
+select,
 textarea {
   box-sizing: border-box;
   padding: 4px 6px;
