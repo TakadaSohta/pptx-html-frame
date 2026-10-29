@@ -11,6 +11,7 @@
   <div id="viewer" hidden>
     <div id="stage"></div>
     <div id="toolbar" hidden>
+      <button type="button" id="btn-open" title="このページをブラウザで開く">ブラウザで開く</button>
       <button type="button" id="btn-reload" title="最初から表示し直す">↻</button>
       <button type="button" id="btn-edit">編集</button>
     </div>
@@ -33,7 +34,7 @@
 
     <div class="pane" data-mode="url">
       <input id="url" type="text" inputmode="url" placeholder="https://example.com/">
-      <p class="note">埋め込みを禁止しているサイト（Google 検索、GitHub など）は表示されません。YouTube は https://www.youtube.com/embed/動画ID の形で入れます。http のページは表示されないことがあります。</p>
+      <p class="note">埋め込みを禁止しているサイト（Google 検索、GitHub、Apple など）は表示されません。そのときは枠の右上の「ブラウザで開く」で開きます。YouTube は再生ページの URL をそのまま入れても、埋め込み用の形に直して表示します。http のページは表示されないことがあります。</p>
     </div>
 
     <details>

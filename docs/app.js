@@ -36,6 +36,7 @@ const $ = (id) => document.getElementById(id);
 const form = $("editor");
 
 let store;
+let inOffice = false;
 let config = null; // 保存済みの内容。null なら未設定
 let view = "edit"; // "edit"（標準表示）または "read"（スライドショー・閲覧表示）
 let editing = false;
@@ -86,8 +87,57 @@ function refresh() {
   form.hidden = !showEditor;
   $("viewer").hidden = showEditor || !config;
   $("empty").hidden = showEditor || !!config;
-  $("toolbar").hidden = view !== "edit";
+  // 「ブラウザで開く」は URL を開くときだけ、スライドショー中も出す。ほかのボタンは編集画面だけ
+  const isUrl = !!config && config.mode === "url";
+  $("btn-open").hidden = !isUrl;
+  $("btn-reload").hidden = view !== "edit";
+  $("btn-edit").hidden = view !== "edit";
+  $("toolbar").hidden = view !== "edit" && !isUrl;
   if (!$("viewer").hidden && shown !== config) render();
+}
+
+// YouTube の再生ページ、短縮 URL、ショート、ライブの URL を、枠に表示できる埋め込み用の URL に直す
+function embedUrl(url) {
+  let u;
+  try {
+    u = new URL(url);
+  } catch {
+    return url;
+  }
+  const host = u.hostname.replace(/^(www|m)\./, "");
+  let id = null;
+  if (host === "youtu.be") {
+    id = u.pathname.split("/")[1];
+  } else if (host === "youtube.com") {
+    const path = u.pathname.match(/^\/(shorts|live)\/([^/]+)/);
+    if (u.pathname === "/watch") id = u.searchParams.get("v");
+    else if (path) id = path[2];
+  }
+  if (!id || !/^[\w-]{11}$/.test(id)) return url;
+  const start = toSeconds(u.searchParams.get("t") || u.searchParams.get("start"));
+  return `https://www.youtube.com/embed/${id}` + (start ? `?start=${start}` : "");
+}
+
+// "90"、"90s"、"1m30s"、"1h2m3s" を秒にする
+function toSeconds(t) {
+  if (!t) return 0;
+  if (/^\d+$/.test(t)) return Number(t);
+  const m = t.match(/^(?:(\d+)h)?(?:(\d+)m)?(?:(\d+)s)?$/);
+  return m ? Number(m[1] || 0) * 3600 + Number(m[2] || 0) * 60 + Number(m[3] || 0) : 0;
+}
+
+// Office の中では既定のブラウザで開く。使えない環境では新しいウィンドウで開く
+function openInBrowser() {
+  if (!config || !config.url) return;
+  if (inOffice) {
+    try {
+      if (Office.context.requirements.isSetSupported("OpenBrowserWindowApi", "1.1")) {
+        Office.context.ui.openBrowserWindow(config.url);
+        return;
+      }
+    } catch {}
+  }
+  window.open(config.url, "_blank", "noopener");
 }
 
 function nextFrame() {
@@ -121,7 +171,7 @@ async function render() {
   stage.appendChild(frame);
   layout();
   await settle();
-  if (cfg.mode === "url") frame.src = cfg.url;
+  if (cfg.mode === "url") frame.src = embedUrl(cfg.url);
   else frame.srcdoc = withPrelude(cfg.html, cfg);
 }
 
@@ -230,7 +280,8 @@ async function save(e) {
   refresh();
 }
 
-function start(inOffice) {
+function start(office) {
+  inOffice = office;
   store = inOffice ? officeStore() : browserStore();
   const saved = store.load();
   config = saved ? { ...DEFAULTS, ...saved } : null;
@@ -260,6 +311,7 @@ function start(inOffice) {
   });
   $("btn-edit").addEventListener("click", openEditor);
   $("btn-reload").addEventListener("click", render);
+  $("btn-open").addEventListener("click", openInBrowser);
   window.addEventListener("resize", layout);
 
   if (inOffice) {
